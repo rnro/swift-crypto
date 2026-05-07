@@ -15,7 +15,6 @@ jobs:
     # TODO: change back to swiftlang/github-workflows and remove ref before merging
     uses: rnro/github-workflows/.github/workflows/package_test.yml@unification
     with:
-      enable_linux: true
       enable_windows_docker: true
       enable_macos: true
       enable_linux_static_sdk_build: true
