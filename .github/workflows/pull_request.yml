@@ -10,45 +10,35 @@ on:
 jobs:
   soundness:
     name: Soundness
-    uses: swiftlang/github-workflows/.github/workflows/soundness.yml@0.0.7
+    # TODO: change back to swiftlang/github-workflows and remove ref before merging
+    uses: rnro/github-workflows/.github/workflows/soundness.yml@unification
     with:
       license_header_check_project_name: "SwiftCrypto"
       docs_check_enabled: false
 
-  unit-tests:
-    name: Unit tests
-    uses: apple/swift-nio/.github/workflows/unit_tests.yml@main
+  tests:
+    name: Tests
+    # TODO: change back to swiftlang/github-workflows and remove ref before merging
+    uses: rnro/github-workflows/.github/workflows/package_test.yml@unification
     with:
-      linux_5_10_arguments_override: "--explicit-target-dependency-import-check error"
-      linux_6_1_arguments_override: "--explicit-target-dependency-import-check error"
-      linux_6_2_arguments_override: "--explicit-target-dependency-import-check error"
-      linux_6_3_arguments_override: "--explicit-target-dependency-import-check error"
-      linux_nightly_next_arguments_override: "--explicit-target-dependency-import-check error"
-      linux_nightly_main_arguments_override: "--explicit-target-dependency-import-check error"
-      windows_6_1_enabled: true
-      windows_6_2_enabled: true
-      windows_6_3_enabled: true
-      windows_nightly_next_enabled: true
-      windows_nightly_main_enabled: true
-      windows_6_1_arguments_override: "--explicit-target-dependency-import-check error"
-      windows_6_2_arguments_override: "--explicit-target-dependency-import-check error"
-      windows_6_3_arguments_override: "--explicit-target-dependency-import-check error"
-      windows_nightly_next_arguments_override: "--explicit-target-dependency-import-check error"
-      windows_nightly_main_arguments_override: "--explicit-target-dependency-import-check error"
+      enable_windows_docker: true
+      enable_macos: true
+      enable_linux_static_sdk_build: true
+      enable_cxx_interop: true
+      enable_ios_xcode_build: true
+      swift_flags: "--explicit-target-dependency-import-check error"
+      swift_nightly_flags: "--explicit-target-dependency-import-check error"
+      xcode_scheme: swift-crypto-Package
+      macos_runner_pool: general
 
   release-builds:
     name: Release builds
-    uses: apple/swift-nio/.github/workflows/release_builds.yml@main
+    # TODO: change back to swiftlang/github-workflows and remove ref before merging
+    uses: rnro/github-workflows/.github/workflows/release_build.yml@unification
     with:
-      windows_6_1_enabled: true
-      windows_6_2_enabled: true
-      windows_6_3_enabled: true
-      windows_nightly_next_enabled: true
-      windows_nightly_main_enabled: true
-
-  cxx-interop:
-    name: Cxx interop
-    uses: apple/swift-nio/.github/workflows/cxx_interop.yml@main
+      enable_windows_docker: true
+      swift_flags: "--explicit-target-dependency-import-check error"
+      swift_nightly_flags: "--explicit-target-dependency-import-check error"
 
   cmake-checks:
     name: CMake checks
@@ -67,14 +57,3 @@ jobs:
             { "name": "CCryptoBoringSSL", "type": "assembly", "exceptions": [ "*/AES/*.swift" ] }
           ]
         }
-
-  macos-tests:
-    name: macOS tests
-    uses: apple/swift-nio/.github/workflows/macos_tests.yml@main
-    with:
-      runner_pool: general
-      build_scheme: swift-crypto-Package
-
-  static-sdk:
-    name: Static SDK
-    uses: apple/swift-nio/.github/workflows/static_sdk.yml@main
