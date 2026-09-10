@@ -56,17 +56,14 @@ jobs:
       xcode_targets: '[macOS, iOS, watchOS, tvOS, visionOS]'
 
       # Job kinds that were a workflow each.
+      linux_command: |
+        Debug-Test: swift test
+        Release-Build: swift build -c release
+      windows_command: |
+        Debug-Test: swift test
+        Release-Build: swift build -c release
       enable_cxx_interop: true
       enable_linux_static_sdk_build: true
-
-  release-builds:
-    name: Release builds
-    uses: rnro/github-workflows/.github/workflows/release_build.yml@unification
-    with:
-      workflows_repository: rnro/github-workflows
-      workflows_ref: unification
-      name: release-builds
-      enable_windows: true
 
   # No unified equivalent: this also asserts the CMakeLists are current, which
   # cmake_build.yml has no counterpart for, so it stays where it is.
