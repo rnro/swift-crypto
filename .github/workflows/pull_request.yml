@@ -17,12 +17,8 @@ jobs:
 
   tests:
     name: Tests
-    uses: rnro/github-workflows/.github/workflows/package_test.yml@unification
+    uses: swiftlang/github-workflows/.github/workflows/package_test.yml@0.0.16
     with:
-      # A fork's default branch does not carry the change, so the ref is named.
-      # A released version needs neither input.
-      workflows_repository: rnro/github-workflows
-      workflows_ref: unification
       # Named because a concurrency group is keyed on it, and this workflow calls
       # the reusable workflows more than once.
       name: tests
