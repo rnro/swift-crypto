@@ -52,11 +52,8 @@ jobs:
       xcode_scheme: swift-crypto-Package
       macos_swift_versions: '["6.1", "6.2", "6.3"]'
       macos_xcode_versions: '["latest-beta"]'
-      enable_macos_xcode_build: true
-      enable_ios_xcode_build: true
-      enable_watchos_xcode_build: true
-      enable_tvos_xcode_build: true
-      enable_visionos_xcode_build: true
+      # A bare list takes every target's defaults: build, and do not test.
+      xcode_targets: '[macOS, iOS, watchOS, tvOS, visionOS]'
 
       # Job kinds that were a workflow each.
       enable_cxx_interop: true
