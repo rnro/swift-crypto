@@ -15,41 +15,58 @@ jobs:
       license_header_check_project_name: "SwiftCrypto"
       docs_check_enabled: false
 
-  unit-tests:
-    name: Unit tests
-    uses: apple/swift-nio/.github/workflows/unit_tests.yml@main
+  tests:
+    name: Tests
+    uses: rnro/github-workflows/.github/workflows/package_test.yml@unification
     with:
-      linux_5_10_arguments_override: "--explicit-target-dependency-import-check error"
-      linux_6_1_arguments_override: "--explicit-target-dependency-import-check error"
-      linux_6_2_arguments_override: "--explicit-target-dependency-import-check error"
-      linux_6_3_arguments_override: "--explicit-target-dependency-import-check error"
-      linux_nightly_next_arguments_override: "--explicit-target-dependency-import-check error"
-      linux_nightly_main_arguments_override: "--explicit-target-dependency-import-check error"
-      windows_6_1_enabled: true
-      windows_6_2_enabled: true
-      windows_6_3_enabled: true
-      windows_nightly_next_enabled: true
-      windows_nightly_main_enabled: true
-      windows_6_1_arguments_override: "--explicit-target-dependency-import-check error"
-      windows_6_2_arguments_override: "--explicit-target-dependency-import-check error"
-      windows_6_3_arguments_override: "--explicit-target-dependency-import-check error"
-      windows_nightly_next_arguments_override: "--explicit-target-dependency-import-check error"
-      windows_nightly_main_arguments_override: "--explicit-target-dependency-import-check error"
+      # A fork's default branch does not carry the change, so the ref is named.
+      # A released version needs neither input.
+      workflows_repository: rnro/github-workflows
+      workflows_ref: unification
+      # Named because a concurrency group is keyed on it, and this workflow calls
+      # the reusable workflows more than once.
+      name: tests
 
-  release-builds:
-    name: Release builds
-    uses: apple/swift-nio/.github/workflows/release_builds.yml@main
-    with:
-      windows_6_1_enabled: true
-      windows_6_2_enabled: true
-      windows_6_3_enabled: true
-      windows_nightly_next_enabled: true
-      windows_nightly_main_enabled: true
+      # Per-version arguments are one object rather than an input per version; a
+      # plain string is the argument list. The 5.10 override the old workflow
+      # carried is dropped: the manifest needs 6.1, and minimum-version detection
+      # from Package.swift would filter it out regardless.
+      linux_version_overrides: |
+        6.1: --explicit-target-dependency-import-check error
+        6.2: --explicit-target-dependency-import-check error
+        6.3: --explicit-target-dependency-import-check error
+        nightly-release: --explicit-target-dependency-import-check error
+        nightly-main: --explicit-target-dependency-import-check error
+      windows_version_overrides: |
+        6.1: --explicit-target-dependency-import-check error
+        6.2: --explicit-target-dependency-import-check error
+        6.3: --explicit-target-dependency-import-check error
+        nightly-release: --explicit-target-dependency-import-check error
+        nightly-main: --explicit-target-dependency-import-check error
 
-  cxx-interop:
-    name: Cxx interop
-    uses: apple/swift-nio/.github/workflows/cxx_interop.yml@main
+      # macOS. The two version lists combine, so the Xcode beta runs alongside the
+      # release toolchains, as macos_tests.yml's independent enable flags did.
+      enable_macos: true
+      macos_repository_owner: apple
+      macos_runner_pool: general
+      xcode_scheme: swift-crypto-Package
+      macos_swift_versions: '["6.1", "6.2", "6.3"]'
+      macos_xcode_versions: '["latest-beta"]'
+      # A bare list takes every target's defaults: build, and do not test.
+      xcode_targets: '[macOS, iOS, watchOS, tvOS, visionOS]'
 
+      # Job kinds that were a workflow each.
+      linux_command: |
+        Debug-Test: swift test
+        Release-Build: swift build -c release
+      windows_command: |
+        Debug-Test: swift test
+        Release-Build: swift build -c release
+      enable_cxx_interop: true
+      enable_linux_static_sdk_build: true
+
+  # No unified equivalent: this also asserts the CMakeLists are current, which
+  # cmake_build.yml has no counterpart for, so it stays where it is.
   cmake-checks:
     name: CMake checks
     uses: apple/swift-nio/.github/workflows/cmake_tests.yml@main
@@ -67,14 +84,3 @@ jobs:
             { "name": "CCryptoBoringSSL", "type": "assembly", "exceptions": [ "*/AES/*.swift" ] }
           ]
         }
-
-  macos-tests:
-    name: macOS tests
-    uses: apple/swift-nio/.github/workflows/macos_tests.yml@main
-    with:
-      runner_pool: general
-      build_scheme: swift-crypto-Package
-
-  static-sdk:
-    name: Static SDK
-    uses: apple/swift-nio/.github/workflows/static_sdk.yml@main
